@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useClub } from 'club-store'
 import { useMe } from '../lib/useMe'
 import Header from './Header'
+import PendingBar from './PendingBar'
 import { useToast } from './Toast'
 
 const LINKS = [
@@ -39,6 +40,7 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+      <PendingBar />
       <Header />
       <nav className="hidden border-b bg-white md:block" aria-label="Main">
         <div className="mx-auto flex max-w-5xl gap-1 px-4">
