@@ -11,6 +11,16 @@ My reservations (Upcoming / History with infinite scroll, cancel with confirm an
 (Enroll/Leave/Full) · Coach notes with star ratings · Notifications dropdown · Club rules in an `<iframe>` ·
 Hidden debug panel (**Ctrl+Shift+D**).
 
+## Added in the product upgrade
+
+- **Weekly recurring bookings:** in the booking modal choose *Every week for 2/4/6/8 weeks*. The summary shows every date and the total. A whole series counts as one active reservation, shows a *Weekly series* badge in Upcoming and has a **Cancel series** button (sessions inside the cancellation window stay booked).
+- **Lesson waitlist:** a full lesson offers **Join waitlist**; waiting players see their position and are enrolled automatically (with a notification) when a seat opens up.
+
+## Dark mode and accessibility
+
+- **Dark mode:** toggle in the header (🌙/☀️). The choice is saved in `localStorage['club:theme']`, which all apps share, and defaults to the operating system preference. It is implemented by remapping the Tailwind utilities in `src/index.css` under a `.dark` class (no `dark:` variants on each element).
+- **Accessibility:** skip link, landmarks, visible focus ring, dialogs with `aria-labelledby`, focus moved into the dialog, kept inside it with Tab and restored on close. Audited with axe-core (WCAG 2 A/AA + best practices) on every page and dialog in light and dark themes: 0 violations at the time of writing.
+
 ## Scripts
 
 | Script          | What it does                                       |

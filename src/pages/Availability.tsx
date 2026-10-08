@@ -9,8 +9,8 @@ const STATE_STYLE: Record<SlotStatus, string> = {
   blocked: 'bg-slate-300 text-slate-700',
   lesson: 'bg-purple-100 text-purple-700',
   'no-lights': 'bg-slate-800 text-amber-200',
-  past: 'bg-slate-100 text-slate-400',
-  inactive: 'bg-slate-100 text-slate-400',
+  past: 'bg-slate-100 text-slate-600',
+  inactive: 'bg-slate-100 text-slate-600',
 }
 
 const STATE_LABEL: Record<SlotStatus, string> = {
@@ -66,6 +66,7 @@ export default function Availability() {
         <input
           type="date"
           data-testid="date-input"
+          aria-label="Date"
           value={date}
           onChange={(e) => e.target.value && setDate(e.target.value)}
           className="rounded border bg-white px-3 py-2 text-sm"
@@ -152,7 +153,7 @@ export default function Availability() {
       )}
 
       {selected && <BookingModal date={date} courtId={selected.courtId} start={selected.start} onClose={() => setSelected(null)} />}
-      {hasBug('slow-render') && <p className="mt-2 text-xs text-slate-400">slow-render bug active</p>}
+      {hasBug('slow-render') && <p className="mt-2 text-xs text-slate-500">slow-render bug active</p>}
     </section>
   )
 }

@@ -28,7 +28,7 @@ export default function Notes() {
               </span>
               <Stars rating={n.rating} testId={`note-rating-${n.id}`} />
             </div>
-            <p data-testid={`note-date-${n.id}`} className="mb-2 text-xs text-slate-400">
+            <p data-testid={`note-date-${n.id}`} className="mb-2 text-xs text-slate-500">
               {format(parseISO(n.createdAt), 'MMM d, yyyy')}
             </p>
             <div
