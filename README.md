@@ -24,20 +24,19 @@ Hidden debug panel (**Ctrl+Shift+D**).
 - Depends on `club-store` (`"club-store": "file:../club-store"`), so clone the repos side by side and run
   `npm install` in `club-store` first (it builds `dist/`).
 - Apps share data through `localStorage['club:v1']`, which only works when they share an **origin**. Open
-  the app through `club-shell` (<http://localhost:5000/player/>) so it sees the same data as admin and coach.
+  the app through `club-shell` (<http://127.0.0.1:5000/player/>) so it sees the same data as admin and coach.
 - `vite.config.ts` sets `base: '/player/'`, the router uses `basename="/player"`, and `resolve.dedupe`
   keeps one copy of React when `club-store` is linked.
 
 ### Deploying
 
-Switch the dependency to the tagged git version and install:
+The committed dependency is the tagged git version (works on Vercel). For live development against a local `club-store`, temporarily use `"club-store": "file:../club-store"` and run `npm install`:
 
 ```json
-"club-store": "github:<org>/club-store#v0.1.0"
+"club-store": "git+https://github.com/mikeMaya08/club-store.git#v0.1.0"
 ```
 
-Create a Netlify site from this repo (config in `netlify.toml`; build output goes to `dist/player` so the
-paths match the base). Point `club-shell`'s `_redirects` at it.
+Deploy as its own **Vercel** project from this repo (config in `vercel.json`; the build writes to `dist/player` so the files match the `/player/` base path, and a rewrite gives deep links the SPA fallback). Name the project `club-player` so `club-shell` can proxy `/player/*` to `https://club-player.vercel.app`. If the `club-store` repo is private, Vercel needs access to it (or switch to a public repo).
 
 ## Test hooks
 
@@ -46,7 +45,7 @@ Add to any URL (they are applied once, stored in `sessionStorage`, then removed 
 `?bug=double-booking,stale-ui,wrong-price,cancel-anytime,slow-render`. `window.__club` exposes
 `{ state, reset(seed), setBugs([]), setNow(iso) }`. See the `club-store` README.
 
-Example: <http://localhost:5000/player/?reset=1&seed=demo&as=player-1&now=2026-10-10T10:00>
+Example: <http://127.0.0.1:5000/player/?reset=1&seed=demo&as=player-1&now=2026-10-10T10:00>
 
 ## Notes for testers
 
