@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns'
 import { api, at, clock, hasBug, hoursUntil, useClub, type Reservation } from 'club-store'
 import Modal from '../components/Modal'
 import Tooltip from '../components/Tooltip'
+import { useToast } from '../components/Toast'
 import { useMe } from '../lib/useMe'
 import { useRun } from '../lib/useRun'
 
@@ -17,9 +18,11 @@ const STATUS_STYLE: Record<Reservation['status'], string> = {
 export default function Reservations() {
   const me = useMe()
   const { run, busy } = useRun()
+  const toast = useToast()
   const [tab, setTab] = useState<'upcoming' | 'history'>('upcoming')
   const [visible, setVisible] = useState(PAGE)
   const [toCancel, setToCancel] = useState<Reservation | null>(null)
+  const [seriesToCancel, setSeriesToCancel] = useState<string | null>(null)
   const sentinel = useRef<HTMLDivElement>(null)
 
   const data = useClub((s) => {
@@ -45,6 +48,16 @@ export default function Reservations() {
     observer.observe(sentinel.current)
     return () => observer.disconnect()
   }, [tab, data.history.length])
+
+  // Upcoming occurrences per series, and how many of them can still be cancelled.
+  const series = new Map<string, { total: number; cancellable: number; first: string }>()
+  for (const r of data.upcoming) {
+    if (!r.seriesId) continue
+    const entry = series.get(r.seriesId) ?? { total: 0, cancellable: 0, first: r.id }
+    entry.total++
+    if (hasBug('cancel-anytime') || hoursUntil(r.date, r.start, clock.now()) >= data.limit) entry.cancellable++
+    series.set(r.seriesId, entry)
+  }
 
   const list = tab === 'upcoming' ? data.upcoming : data.history.slice(0, visible)
 
@@ -101,6 +114,11 @@ export default function Reservations() {
                       {r.playerId === me.id ? `With ${data.users[r.partnerId]}` : `Booked by ${data.users[r.playerId]}`}
                     </p>
                   )}
+                  {r.seriesId && (
+                    <p data-testid={`reservation-series-${r.id}`} className="text-xs text-green-700">
+                      ↻ Weekly series
+                    </p>
+                  )}
                   {r.cancelReason && (
                     <p data-testid={`reservation-reason-${r.id}`} className="text-xs text-red-600">
                       {r.cancelReason}
@@ -117,7 +135,23 @@ export default function Reservations() {
                 </div>
               </div>
               {tab === 'upcoming' && (
-                <div className="mt-2 flex justify-end">
+                <div className="mt-2 flex flex-wrap justify-end gap-2">
+                  {r.seriesId && series.get(r.seriesId)?.first === r.id && (
+                    <Tooltip
+                      text={series.get(r.seriesId)!.cancellable === 0 ? 'Every remaining session is inside the cancellation window.' : null}
+                      testId={`cancel-series-tooltip-${r.id}`}
+                    >
+                      <button
+                        type="button"
+                        data-testid={`cancel-series-${r.id}`}
+                        disabled={series.get(r.seriesId)!.cancellable === 0}
+                        className="rounded border border-red-300 px-3 py-1.5 text-sm text-red-700 disabled:border-slate-200 disabled:text-slate-400"
+                        onClick={() => setSeriesToCancel(r.seriesId!)}
+                      >
+                        Cancel series ({series.get(r.seriesId)!.total})
+                      </button>
+                    </Tooltip>
+                  )}
                   <Tooltip text={note} testId={`cancel-tooltip-${r.id}`}>
                     <button
                       type="button"
@@ -139,10 +173,41 @@ export default function Reservations() {
       {tab === 'history' && (
         <>
           <div ref={sentinel} data-testid="history-sentinel" className="h-8" />
-          <p data-testid="history-count" className="text-center text-xs text-slate-400">
+          <p data-testid="history-count" className="text-center text-xs text-slate-500">
             Showing {Math.min(visible, data.history.length)} of {data.history.length}
           </p>
         </>
+      )}
+
+      {seriesToCancel && series.get(seriesToCancel) && (
+        <Modal title="Cancel the whole series?" testId="cancel-series-dialog" onClose={() => setSeriesToCancel(null)}>
+          <p data-testid="cancel-series-text" className="text-sm text-slate-600">
+            {series.get(seriesToCancel)!.cancellable} of {series.get(seriesToCancel)!.total} upcoming sessions will be cancelled.
+            {series.get(seriesToCancel)!.cancellable < series.get(seriesToCancel)!.total && ' The rest are inside the cancellation window and stay booked.'}
+          </p>
+          <div className="mt-4 flex justify-end gap-2">
+            <button type="button" data-testid="cancel-series-dismiss" className="rounded border px-4 py-2 text-sm" onClick={() => setSeriesToCancel(null)}>
+              Keep them
+            </button>
+            <button
+              type="button"
+              data-testid="cancel-series-confirm"
+              disabled={busy}
+              className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              onClick={async () => {
+                const id = seriesToCancel
+                const result = await run(() => api.cancelSeries(id, me.id))
+                if (result.ok) {
+                  const { cancelled, skipped } = result.value
+                  toast(`${cancelled} session${cancelled === 1 ? '' : 's'} cancelled${skipped ? `, ${skipped} kept (too late to cancel)` : ''}`, 'success')
+                }
+                setSeriesToCancel(null)
+              }}
+            >
+              {busy ? 'Cancelling…' : 'Yes, cancel series'}
+            </button>
+          </div>
+        </Modal>
       )}
 
       {toCancel && (

@@ -40,6 +40,12 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+      <a
+        href="#main"
+        className="sr-only rounded bg-white px-3 py-2 text-slate-900 focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[90]"
+      >
+        Skip to content
+      </a>
       <PendingBar />
       <Header />
       <nav className="hidden border-b bg-white md:block" aria-label="Main">
@@ -59,7 +65,7 @@ export default function Layout() {
           ))}
         </div>
       </nav>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-3 py-4 md:px-4">
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 px-3 py-4 outline-none md:px-4">
         <Outlet context={me} />
       </main>
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-white md:hidden" aria-label="Main (mobile)">

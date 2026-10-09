@@ -30,6 +30,7 @@ export default function Lessons() {
           const left = l.capacity - l.studentIds.length
           const enrolled = l.studentIds.includes(me.id)
           const full = left <= 0
+          const position = l.waitlist.indexOf(me.id) + 1
           return (
             <li key={l.id} data-testid={`lesson-${l.id}`} className="rounded-lg border bg-white p-3">
               <div className="flex items-start justify-between gap-2">
@@ -50,7 +51,34 @@ export default function Lessons() {
                   {full ? 'Full' : `${left} seat${left === 1 ? '' : 's'} left`}
                 </span>
               </div>
-              <div className="mt-2 flex justify-end gap-2">
+              {position > 0 && (
+                <p data-testid={`lesson-waitlist-pos-${l.id}`} className="mt-2 text-sm text-amber-700">
+                  You are #{position} on the waitlist. We will enroll you automatically if a seat opens up.
+                </p>
+              )}
+              <div className="mt-2 flex flex-wrap justify-end gap-2">
+                {!enrolled && full && position === 0 && (
+                  <button
+                    type="button"
+                    data-testid={`lesson-waitlist-join-${l.id}`}
+                    disabled={busy}
+                    className="rounded border border-green-600 px-3 py-1.5 text-sm font-medium text-green-700 disabled:opacity-60"
+                    onClick={() => run(() => api.joinWaitlist(l.id, me.id), 'You are on the waitlist')}
+                  >
+                    Join waitlist
+                  </button>
+                )}
+                {position > 0 && (
+                  <button
+                    type="button"
+                    data-testid={`lesson-waitlist-leave-${l.id}`}
+                    disabled={busy}
+                    className="rounded border px-3 py-1.5 text-sm disabled:opacity-60"
+                    onClick={() => run(() => api.leaveWaitlist(l.id, me.id), 'You left the waitlist')}
+                  >
+                    Leave waitlist
+                  </button>
+                )}
                 {enrolled ? (
                   <button
                     type="button"
@@ -66,7 +94,7 @@ export default function Lessons() {
                     type="button"
                     data-testid={`lesson-enroll-${l.id}`}
                     disabled={busy || full}
-                    className="rounded bg-green-600 px-3 py-1.5 text-sm font-medium text-white disabled:bg-slate-300 disabled:text-slate-600"
+                    className="rounded bg-green-700 px-3 py-1.5 text-sm font-medium text-white disabled:bg-slate-300 disabled:text-slate-600"
                     onClick={() => run(() => api.enrollInLesson(l.id, me.id), 'You are enrolled')}
                   >
                     {full ? 'Full' : 'Enroll'}
