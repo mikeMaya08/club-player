@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import DebugPanel from './components/DebugPanel'
 import Guard from './components/Guard'
 import Layout from './components/Layout'
+import Activity from './pages/Activity'
 import Availability from './pages/Availability'
 import Lessons from './pages/Lessons'
 import Login from './pages/Login'
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="reservations" element={<Reservations />} />
             <Route path="lessons" element={<Lessons />} />
             <Route path="notes" element={<Notes />} />
+            <Route path="activity" element={<Activity />} />
             <Route path="rules" element={<Rules />} />
           </Route>
         </Route>
