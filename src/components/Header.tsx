@@ -4,6 +4,7 @@ import { useMe } from '../lib/useMe'
 import NotificationBell from './NotificationBell'
 import ThemeToggle from './ThemeToggle'
 
+/** App bar: app name, current player, theme switch, notifications and log out. */
 export default function Header() {
   const me = useMe()
   const navigate = useNavigate()
