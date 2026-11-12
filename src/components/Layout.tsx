@@ -11,6 +11,7 @@ const LINKS = [
   { to: '/reservations', label: 'Reservations', id: 'reservations' },
   { to: '/lessons', label: 'Lessons', id: 'lessons' },
   { to: '/notes', label: 'Notes', id: 'notes' },
+  { to: '/activity', label: 'Activity', id: 'activity' },
   { to: '/rules', label: 'Rules', id: 'rules' },
 ]
 
@@ -69,7 +70,7 @@ export default function Layout() {
         <Outlet context={me} />
       </main>
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-white md:hidden" aria-label="Main (mobile)">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-6">
           {LINKS.map((l) => (
             <NavLink
               key={l.id}

@@ -11,6 +11,10 @@ My reservations (Upcoming / History with infinite scroll, cancel with confirm an
 (Enroll/Leave/Full) · Coach notes with star ratings · Notifications dropdown · Club rules in an `<iframe>` ·
 Hidden debug panel (**Ctrl+Shift+D**).
 
+## Activity log
+
+**My activity** (`/player/activity`) lists the events that involve the player (their bookings and cancellations, lessons, waitlist, admin changes to their reservations), newest first, with All / Reservations / Lessons filters and *Show more*. Events come from the activity log in `club-store`; they appear live when an admin or coach acts on the player's data.
+
 ## Added in the product upgrade
 
 - **Weekly recurring bookings:** in the booking modal choose *Every week for 2/4/6/8 weeks*. The summary shows every date and the total. A whole series counts as one active reservation, shows a *Weekly series* badge in Upcoming and has a **Cancel series** button (sessions inside the cancellation window stay booked).
