@@ -36,11 +36,13 @@ function useSlowRender(key: string) {
   return !slow || readyKey === key
 }
 
+/** Court x hour grid for one day. Each cell comes from `slotStatus`, the same rules the store enforces when booking. */
 export default function Availability() {
   const [date, setDate] = useState(() => clock.today())
   const [selected, setSelected] = useState<{ courtId: string; start: string } | null>(null)
   const ready = useSlowRender(date)
 
+  // The grid is computed inside the selector so it refreshes when any tab changes the data or the clock.
   const grid = useClub((s) => {
     const now = clock.now()
     const slots = slotsFor(s.settings)

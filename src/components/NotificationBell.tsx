@@ -4,10 +4,12 @@ import { format, parseISO } from 'date-fns'
 import { useMe } from '../lib/useMe'
 import { useRun } from '../lib/useRun'
 
+/** Bell with an unread counter and a dropdown to mark notifications as read (one by one or all). */
 export default function NotificationBell() {
   const me = useMe()
   const [open, setOpen] = useState(false)
   const { run } = useRun()
+  // Only this player's notifications, newest first (the id breaks ties for the same timestamp).
   const items = useClub((s) =>
     s.notifications.filter((n) => n.userId === me.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id)),
   )

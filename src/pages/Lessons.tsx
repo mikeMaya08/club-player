@@ -3,6 +3,7 @@ import { api, at, clock, useClub } from 'club-store'
 import { useMe } from '../lib/useMe'
 import { useRun } from '../lib/useRun'
 
+/** Upcoming lessons with seats left, Enroll / Leave, and the waitlist for full ones. */
 export default function Lessons() {
   const me = useMe()
   const { run, busy } = useRun()
@@ -10,6 +11,7 @@ export default function Lessons() {
     const now = clock.now()
     return {
       lessons: s.lessons
+        // hide cancelled and finished lessons; a lesson stays listed until it ends
         .filter((l) => l.status === 'scheduled' && at(l.date, l.end) > now)
         .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)),
       users: Object.fromEntries(s.users.map((u) => [u.id, u.name])),
@@ -30,6 +32,7 @@ export default function Lessons() {
           const left = l.capacity - l.studentIds.length
           const enrolled = l.studentIds.includes(me.id)
           const full = left <= 0
+          // 1-based place on the waitlist, or 0 when the player is not waiting
           const position = l.waitlist.indexOf(me.id) + 1
           return (
             <li key={l.id} data-testid={`lesson-${l.id}`} className="rounded-lg border bg-white p-3">

@@ -14,6 +14,7 @@ export function trackPending<T>(promise: Promise<T>): Promise<T> {
   })
 }
 
+/** Number of store calls in flight right now (0 means idle). */
 export const usePending = () =>
   useSyncExternalStore(
     (l) => {
