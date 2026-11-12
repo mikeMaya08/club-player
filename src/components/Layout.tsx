@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useClub } from 'club-store'
 import { useMe } from '../lib/useMe'
+import Announcements from './Announcements'
 import Header from './Header'
 import PendingBar from './PendingBar'
 import { useToast } from './Toast'
@@ -67,6 +68,7 @@ export default function Layout() {
         </div>
       </nav>
       <main id="main" tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 px-3 py-4 outline-none md:px-4">
+        <Announcements />
         <Outlet context={me} />
       </main>
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-white md:hidden" aria-label="Main (mobile)">
